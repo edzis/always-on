@@ -74,11 +74,13 @@ extension LidSleep {
         IOPMSleepSystem(powerManagement)
     }
 
+    /// Online, not active: an external display that has gone to sleep still means the Mac is
+    /// used closed, at a desk.
     private static var hasExternalDisplay: Bool {
         var count: UInt32 = 0
-        guard CGGetActiveDisplayList(0, nil, &count) == .success, count > 0 else { return false }
+        guard CGGetOnlineDisplayList(0, nil, &count) == .success, count > 0 else { return false }
         var displays = [CGDirectDisplayID](repeating: 0, count: Int(count))
-        guard CGGetActiveDisplayList(count, &displays, &count) == .success else { return false }
+        guard CGGetOnlineDisplayList(count, &displays, &count) == .success else { return false }
         return displays.prefix(Int(count)).contains { CGDisplayIsBuiltin($0) == 0 }
     }
 
